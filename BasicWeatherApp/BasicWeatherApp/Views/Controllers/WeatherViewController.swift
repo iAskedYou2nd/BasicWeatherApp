@@ -15,7 +15,6 @@ import Combine
  -Write unit tests
  -Add ScrollView Maybe or just remove landscape. Not the most practical with landscape
  -Implement a debug menu
- -Add Load animation
  -Create SwiftUI Version and verify all non-UI code works as is without changes
  */
 
@@ -87,7 +86,7 @@ class WeatherViewController: UIViewController {
 
     private func bind() {
         self.weatherViewModel.weatherFormattedPublisher
-            .delay(for: 2, scheduler: DispatchQueue.main)
+            .delay(for: 3, scheduler: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
                 self?.isLoading = false
                 print(completion)

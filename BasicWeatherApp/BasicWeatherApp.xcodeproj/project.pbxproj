@@ -32,6 +32,7 @@
 		571B8FBC2A2AC3480009D59D /* QuerySanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571B8FBB2A2AC3480009D59D /* QuerySanitizer.swift */; };
 		57CBC5D42A3146B400A1549C /* WeatherFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57CBC5D32A3146B400A1549C /* WeatherFormatter.swift */; };
 		57CBC5D62A31522700A1549C /* UIViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57CBC5D52A31522700A1549C /* UIViewControllerExtension.swift */; };
+		57CBC5D82A315E3F00A1549C /* TriangleLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57CBC5D72A315E3F00A1549C /* TriangleLoadingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,6 +63,7 @@
 		571B8FBB2A2AC3480009D59D /* QuerySanitizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuerySanitizer.swift; sourceTree = "<group>"; };
 		57CBC5D32A3146B400A1549C /* WeatherFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherFormatter.swift; sourceTree = "<group>"; };
 		57CBC5D52A31522700A1549C /* UIViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtension.swift; sourceTree = "<group>"; };
+		57CBC5D72A315E3F00A1549C /* TriangleLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriangleLoadingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				571B8FAB2A29120D0009D59D /* WeatherView.swift */,
+				57CBC5D72A315E3F00A1549C /* TriangleLoadingView.swift */,
 				571B8FAD2A2976020009D59D /* ViewHelpers */,
 				571B8F882A27E92C0009D59D /* Controllers */,
 			);
@@ -293,6 +296,7 @@
 				571B8F992A2830070009D59D /* ImageCache.swift in Sources */,
 				571B8FAF2A2976380009D59D /* StackViewExtension.swift in Sources */,
 				571B8F932A27EE100009D59D /* NetworkManagerType.swift in Sources */,
+				57CBC5D82A315E3F00A1549C /* TriangleLoadingView.swift in Sources */,
 				571B8F952A27EEA10009D59D /* NetworkError.swift in Sources */,
 				571B8FB52A297AB10009D59D /* UILabelExtension.swift in Sources */,
 				571B8F9B2A2832250009D59D /* CacheType.swift in Sources */,

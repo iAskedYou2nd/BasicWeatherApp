@@ -64,23 +64,29 @@ class WeatherView: UIView {
         return UILabel(initialText: "", alignment: .center)
     }()
     
-    lazy var loadSpinner: UIActivityIndicatorView = {
-        let spinner = UIActivityIndicatorView(style: .medium)
-        spinner.translatesAutoresizingMaskIntoConstraints = false
-        spinner.color = .black
-        spinner.isHidden = true
-        return spinner
+//    lazy var loadSpinner: UIActivityIndicatorView = {
+//        let spinner = UIActivityIndicatorView(style: .medium)
+//        spinner.translatesAutoresizingMaskIntoConstraints = false
+//        spinner.color = .black
+//        spinner.isHidden = true
+//        return spinner
+//    }()
+    
+    lazy var loadSpinner: TriangleLoadingView = {
+        let loadSpinner = TriangleLoadingView()
+        loadSpinner.translatesAutoresizingMaskIntoConstraints = false
+        return loadSpinner
     }()
     
     func startLoading() {
         self.loadSpinner.isHidden = false
-        self.loadSpinner.startAnimating()
+        self.loadSpinner.start()
         
     }
     
     func stopLoading() {
         self.loadSpinner.isHidden = true
-        self.loadSpinner.stopAnimating()
+        self.loadSpinner.end()
     }
     
     
