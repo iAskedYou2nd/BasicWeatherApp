@@ -14,20 +14,25 @@ class WeatherViewModel: ObservableObject, WeatherViewModelType {
     private let locationManager: LocationManagerType?
     private let persistentContainer: PersistentContainerType
     private let cache: CacheType
-    // MARK: Consider either 2 pubs for icon and data, or have logic to only send when both are available
-    var weatherDataPublisher: PassthroughSubject<WeatherModel, Never> = PassthroughSubject()
+    var weatherFormattedPublisher = PassthroughSubject<WeatherFormatter, Error>()
     private var weatherModel: WeatherModel? {
         didSet {
-            guard let model = self.weatherModel else { return }
-            self.weatherDataPublisher.send(model)
+            if self.weatherModel == nil {
+                // Generic Error as there will always be the same message to the user
+                self.weatherFormattedPublisher.send(completion: .failure(NSError(domain: "Error", code: 0)))
+            }
         }
     }
-    // TODO: Replace to the detail viewmodel
-    var weatherIconDataPublisher: PassthroughSubject<Data, Never> = PassthroughSubject()
     private var iconData: Data? {
         didSet {
-            guard let data = self.iconData else { return }
-            self.weatherIconDataPublisher.send(data)
+            if let data = self.iconData, let weatherModel = self.weatherModel {
+                let formattedViewModel = WeatherFormatter(weatherModel: weatherModel, iconData: data)
+                // Only notify when all data is done
+                self.weatherFormattedPublisher.send(formattedViewModel)
+            } else {
+                // Generic Error as there will always be the same message to the user
+                self.weatherFormattedPublisher.send(completion: .failure(NSError(domain: "Error", code: 0)))
+            }
         }
     }
     private var subscribers = Set<AnyCancellable>()
@@ -46,9 +51,10 @@ class WeatherViewModel: ObservableObject, WeatherViewModelType {
     }
     
     func loadCurrentLocationWeather() {
-        // TODO: Update when Location Errors are made
         self.locationManager?.currentLocationPublisher
-            .sink(receiveValue: { [weak self] coords in
+            .sink(receiveCompletion: { [weak self] completion in
+                self?.weatherModel = nil
+            }, receiveValue: { [weak self] coords in
                 let request = Environment.weatherCoordinates(coords.lat, coords.lon).request
                 self?.requestNetwork(request: request)
             }).store(in: &self.subscribers)
@@ -64,8 +70,10 @@ class WeatherViewModel: ObservableObject, WeatherViewModelType {
     private func requestNetwork(request: URLRequest?) {
         self.networkManager.fetchModel(request: request)
             .receive(on: DispatchQueue.main)
-            .sink { completion in
-                // TODO: Error Handle
+            .sink { [weak self] completion in
+                if case .failure = completion {
+                    self?.weatherModel = nil
+                }
                 print(completion)
             } receiveValue: { [weak self] (weatherModel: WeatherModel) in
                 self?.weatherModel = weatherModel
@@ -74,7 +82,6 @@ class WeatherViewModel: ObservableObject, WeatherViewModelType {
             }.store(in: &self.subscribers)
     }
     
-    // TODO: Place this in weatherDetailViewmodel
     private func requestIconData(for iconName: String?) {
         guard let iconName = iconName else { return }
         
@@ -87,7 +94,10 @@ class WeatherViewModel: ObservableObject, WeatherViewModelType {
         let request = Environment.weatherIcon(iconName).request
         self.networkManager.fetchData(request: request)
             .receive(on: DispatchQueue.main)
-            .sink { completion in
+            .sink { [weak self] completion in
+                if case .failure = completion {
+                    self?.iconData = nil
+                }
                 print(completion)
             } receiveValue: { [weak self] iconData in
                 self?.iconData = iconData

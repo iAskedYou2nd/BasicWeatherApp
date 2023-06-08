@@ -9,6 +9,6 @@ import Foundation
 import Combine
 
 protocol LocationManagerType {
-    var currentLocationPublisher: PassthroughSubject<Coordinates, Never> { get }
+    var currentLocationPublisher: PassthroughSubject<Coordinates, Error> { get }
     func requestLocation()
 }

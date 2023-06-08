@@ -14,11 +14,14 @@ class LocationManager: NSObject, LocationManagerType {
     private let manager: CLLocationManager = CLLocationManager()
     
     // TODO: Check for location errors possible and replace with Never
-    var currentLocationPublisher: PassthroughSubject<Coordinates, Never> = PassthroughSubject()
+    var currentLocationPublisher = PassthroughSubject<Coordinates, Error>()
     private var currentLocation: Coordinates? {
         didSet {
-            guard let location = self.currentLocation else { return }
-            self.currentLocationPublisher.send(location)
+            if let location = self.currentLocation {
+                self.currentLocationPublisher.send(location)
+            } else {
+                self.currentLocationPublisher.send(completion: .failure(NSError(domain: "Error", code: 0)))
+            }
         }
     }
     
@@ -29,11 +32,6 @@ class LocationManager: NSObject, LocationManagerType {
         self.manager.requestWhenInUseAuthorization()
     }
     
-//    convenience init(initialLocation: Coordinates) {
-//        self.init()
-//        self.currentLocation = initialLocation
-//    }
-    
     func requestLocation() {
         self.manager.requestLocation()
     }
@@ -43,7 +41,6 @@ class LocationManager: NSObject, LocationManagerType {
 extension LocationManager: CLLocationManagerDelegate {
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        print("Auth Updated!")
         if manager.authorizationStatus == .authorizedAlways || manager.authorizationStatus == .authorizedWhenInUse {
             self.manager.requestLocation()
         }
@@ -55,7 +52,8 @@ extension LocationManager: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Error: \(error)")
+        print("Location Error: \(error)")
+        self.currentLocation = nil
     }
     
     

@@ -8,7 +8,21 @@
 import UIKit
 
 class WeatherView: UIView {
-
+    
+    lazy var contentView: UIView = {
+        let view = UIView(frame: .zero)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
+        return view
+    }()
+    
+    lazy var loadingView: UIView = {
+        let view = UIView(frame: .zero)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
+        return view
+    }()
+    
     lazy var locationLabel: UILabel = {
         return UILabel(initialText: "Location Name", alignment: .center, font: UIFont.systemFont(ofSize: 24))
     }()
@@ -26,7 +40,6 @@ class WeatherView: UIView {
         let imageView = UIImageView(frame: .zero)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = UIImage(systemName: "cloud.sun.rain")
-//        imageView.backgroundColor = .orange
         imageView.contentMode = .scaleAspectFit
         imageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
         return imageView
@@ -52,7 +65,26 @@ class WeatherView: UIView {
         return UILabel(initialText: "Cloud Coverage %", alignment: .center)
     }()
     
-    // Inject in a formulated Wrapper / ViewModel for the properties
+    lazy var loadSpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView(style: .medium)
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        spinner.color = .black
+        spinner.isHidden = true
+        return spinner
+    }()
+    
+    func startLoading() {
+        self.loadSpinner.isHidden = false
+        self.loadSpinner.startAnimating()
+        
+    }
+    
+    func stopLoading() {
+        self.loadSpinner.isHidden = true
+        self.loadSpinner.stopAnimating()
+    }
+    
+    
     init() {
         super.init(frame: .zero)
         self.setUp()
@@ -88,8 +120,26 @@ class WeatherView: UIView {
         outerVStack.addArrangedSubview(self.windSpeedLabel)
         outerVStack.addArrangedSubview(self.cloudCoveragePercentLabel)
         
-        self.addSubview(outerVStack)
+        self.contentView.addSubview(outerVStack)
         outerVStack.bindToContainerView()
+        self.addSubview(self.contentView)
+        self.contentView.bindToContainerView(edges: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
+        
+        self.insertSubview(self.loadSpinner, at: 0)
+        self.loadSpinner.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        self.loadSpinner.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+    }
+    
+    func update(with weatherFormatter: WeatherFormatter) {
+        self.locationLabel.text = weatherFormatter.locationName
+        self.tempLabel.text = weatherFormatter.temperature
+        self.minMaxFeelsLikeLabel.text = weatherFormatter.minMaxFeelsLike
+        self.weatherIconImageView.image = UIImage(data: weatherFormatter.iconData)
+        self.iconDescriptionLabel.text = weatherFormatter.iconDescription
+        self.pressureLabel.text = weatherFormatter.pressure
+        self.humidityLabel.text = weatherFormatter.humidity
+        self.windSpeedLabel.text = weatherFormatter.windSpeed
+        self.cloudCoveragePercentLabel.text = weatherFormatter.cloudCoverage
     }
     
 }

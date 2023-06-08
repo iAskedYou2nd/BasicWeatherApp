@@ -58,8 +58,8 @@ struct Clouds: Decodable {
 }
 
 struct SystemInfo: Decodable {
-    let type: Int
-    let id: Int
+    let type: Int?
+    let id: Int?
     let country: String
     let sunrise: Int64
     let sunset: Int64

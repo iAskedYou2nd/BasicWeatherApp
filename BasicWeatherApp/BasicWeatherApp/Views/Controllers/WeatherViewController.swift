@@ -10,15 +10,14 @@ import Combine
 
 /*
  TODO List:
- -Finish ViewModel(s)
-    -Create WeatherViewModel for presentation and icon image. Give more accuate name for viewmodels
  -Keyboard appearance with constraints
+ -Make dark mode compatable
  -Add initial visuals for UX on initial launch with empty persist store
  -Write unit tests
- -Add ScrollView Maybe
- -Create SwiftUI Version
+ -Add ScrollView Maybe or just remove landscape. Not the most practical with landscape
  -Implement a debug menu
  -Add Load animation
+ -Create SwiftUI Version and verify all non-UI code works as is without changes
  */
 
 class WeatherViewController: UIViewController {
@@ -31,7 +30,7 @@ class WeatherViewController: UIViewController {
         return searchBar
     }()
     
-    // MARK: Probably does not work with Light / Dark Mode as is. Check
+    // MARK: Probably does not work with Light / Dark Mode as is. Check for all views
     lazy var myLocationButton: UIButton = {
         let button = UIButton(configuration: .borderedProminent())
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -52,6 +51,18 @@ class WeatherViewController: UIViewController {
     let weatherViewModel: WeatherViewModelType
     private var subscribers = Set<AnyCancellable>()
     
+    private var isLoading = false {
+        didSet {
+            self.searchBar.isEnabled = !self.isLoading
+            self.myLocationButton.isEnabled = !self.isLoading
+            self.searchBar.alpha = (self.isLoading) ? 0.25 : 1.0
+            self.myLocationButton.alpha = (self.isLoading) ? 0.25 : 1.0
+            self.weatherView.contentView.alpha = (self.isLoading) ? 0.25 : 1.0
+            let action = (self.isLoading) ? self.weatherView.startLoading : self.weatherView.stopLoading
+            action()
+        }
+    }
+    
     init(viewModel: WeatherViewModelType = WeatherViewModel()) {
         self.weatherViewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -65,24 +76,23 @@ class WeatherViewController: UIViewController {
         super.viewDidLoad()
         self.setUp()
         self.bind()
+        self.isLoading = true
         self.weatherViewModel.loadMostRecentLocation()
     }
 
     private func bind() {
-        self.weatherViewModel.weatherDataPublisher
-            .receive(on: DispatchQueue.main)
-            .zip(self.weatherViewModel.weatherIconDataPublisher)
-            .sink { [weak self] (weather: (weatherModel: WeatherModel, iconData: Data)) in
-                self?.weatherView.locationLabel.text = weather.weatherModel.name
-                self?.weatherView.tempLabel.text = "\(weather.weatherModel.main.temp)°"
-                self?.weatherView.minMaxFeelsLikeLabel.text = "\(weather.weatherModel.main.tempMin)° / \(weather.weatherModel.main.tempMax)° Feels like \(weather.weatherModel.main.feelsLike)°"
-                self?.weatherView.weatherIconImageView.image = UIImage(data: weather.iconData)
-                self?.weatherView.iconDescriptionLabel.text = weather.weatherModel.weather.first?.description
-                self?.weatherView.pressureLabel.text = "Pressure: \(weather.weatherModel.main.pressure)hPa"
-                self?.weatherView.humidityLabel.text = "Humidity: \(weather.weatherModel.main.humidity)%"
-                self?.weatherView.windSpeedLabel.text = "Wind Speed: \(weather.weatherModel.wind.speed)mph"
-                self?.weatherView.cloudCoveragePercentLabel.text = "Cloud Coverage: \(weather.weatherModel.clouds.all)%"
-            }.store(in: &self.subscribers)
+        self.weatherViewModel.weatherFormattedPublisher
+            .delay(for: 2, scheduler: DispatchQueue.main)
+            .sink(receiveCompletion: { [weak self] completion in
+                self?.isLoading = false
+                print(completion)
+                if case .failure = completion {
+                    self?.presentErrorAlert()
+                }
+            }, receiveValue: { [weak self] formattedViewModel in
+                self?.isLoading = false
+                self?.weatherView.update(with: formattedViewModel)
+            }).store(in: &self.subscribers)
     }
     
     // TODO: Refactor to include Scroll capability for smaller space
@@ -117,6 +127,7 @@ class WeatherViewController: UIViewController {
     
     @objc
     func locationButtonPressed() {
+        self.isLoading = true
         self.weatherViewModel.loadCurrentLocationWeather()
     }
 
@@ -128,6 +139,7 @@ extension WeatherViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         print("Search!!!!")
         guard let query = searchBar.text, !query.isEmpty else { return }
+        self.isLoading = true
         self.weatherViewModel.loadQueriedLocationWeather(query: query)
     }
     
