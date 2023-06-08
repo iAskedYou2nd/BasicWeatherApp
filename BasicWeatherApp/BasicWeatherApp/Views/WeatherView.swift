@@ -24,45 +24,44 @@ class WeatherView: UIView {
     }()
     
     lazy var locationLabel: UILabel = {
-        return UILabel(initialText: "Location Name", alignment: .center, font: UIFont.systemFont(ofSize: 24))
+        return UILabel(initialText: "", alignment: .center, font: UIFont.systemFont(ofSize: 24))
     }()
     
     lazy var tempLabel: UILabel = {
-        return UILabel(initialText: "Temp", alignment: .center, font: UIFont.systemFont(ofSize: 30))
+        return UILabel(initialText: "", alignment: .center, font: UIFont.systemFont(ofSize: 30))
     }()
     
     lazy var minMaxFeelsLikeLabel: UILabel = {
-        return UILabel(initialText: "Min / Max Feels Like", alignment: .center)
+        return UILabel(initialText: "", alignment: .center)
     }()
     
-    // TODO: Create custom ImageView with one of my animations for the loading
     lazy var weatherIconImageView: UIImageView = {
         let imageView = UIImageView(frame: .zero)
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = UIImage(systemName: "cloud.sun.rain")
+//        imageView.image = UIImage(systemName: "cloud.sun.rain")
         imageView.contentMode = .scaleAspectFit
         imageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
         return imageView
     }()
     
     lazy var iconDescriptionLabel: UILabel = {
-        return UILabel(initialText: "Description", alignment: .center)
+        return UILabel(initialText: "", alignment: .center)
     }()
     
     lazy var pressureLabel: UILabel = {
-        return UILabel(initialText: "Pressure", alignment: .center)
+        return UILabel(initialText: "", alignment: .center)
     }()
     
     lazy var humidityLabel: UILabel = {
-        return UILabel(initialText: "Humidity", alignment: .center)
+        return UILabel(initialText: "", alignment: .center)
     }()
     
     lazy var windSpeedLabel: UILabel = {
-        return UILabel(initialText: "Wind Speed mph", alignment: .center)
+        return UILabel(initialText: "", alignment: .center)
     }()
     
     lazy var cloudCoveragePercentLabel: UILabel = {
-        return UILabel(initialText: "Cloud Coverage %", alignment: .center)
+        return UILabel(initialText: "", alignment: .center)
     }()
     
     lazy var loadSpinner: UIActivityIndicatorView = {

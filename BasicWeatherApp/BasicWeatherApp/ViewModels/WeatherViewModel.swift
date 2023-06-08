@@ -44,10 +44,11 @@ class WeatherViewModel: ObservableObject, WeatherViewModelType {
         self.cache = cache
     }
     
-    func loadMostRecentLocation() {
+    func loadMostRecentLocation(completion: () -> Void) {
         guard let mostRecentCoord = self.persistentContainer.getModel(type: Coordinates.self) else { return }
         let request = Environment.weatherCoordinates(mostRecentCoord.lat, mostRecentCoord.lon).request
         self.requestNetwork(request: request)
+        completion()
     }
     
     func loadCurrentLocationWeather() {

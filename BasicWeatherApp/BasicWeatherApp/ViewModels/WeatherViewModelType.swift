@@ -10,7 +10,7 @@ import Combine
 
 protocol WeatherViewModelType {
     var weatherFormattedPublisher: PassthroughSubject<WeatherFormatter, Error> { get }
-    func loadMostRecentLocation()
+    func loadMostRecentLocation(completion: () -> Void)
     func loadCurrentLocationWeather()
     func loadQueriedLocationWeather(query: String)
 }

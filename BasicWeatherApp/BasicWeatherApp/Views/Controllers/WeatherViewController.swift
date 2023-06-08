@@ -12,7 +12,6 @@ import Combine
  TODO List:
  -Keyboard appearance with constraints
  -Make dark mode compatable
- -Add initial visuals for UX on initial launch with empty persist store
  -Write unit tests
  -Add ScrollView Maybe or just remove landscape. Not the most practical with landscape
  -Implement a debug menu
@@ -42,6 +41,10 @@ class WeatherViewController: UIViewController {
         return button
     }()
     
+    lazy var welcomeLabel: UILabel = {
+        return UILabel(initialText: "Welcome, please search for the weather", alignment: .center)
+    }()
+    
     lazy var weatherView: WeatherView = {
         let weatherView = WeatherView()
         weatherView.translatesAutoresizingMaskIntoConstraints = false
@@ -53,6 +56,7 @@ class WeatherViewController: UIViewController {
     
     private var isLoading = false {
         didSet {
+            self.welcomeLabel.isHidden = true
             self.searchBar.isEnabled = !self.isLoading
             self.myLocationButton.isEnabled = !self.isLoading
             self.searchBar.alpha = (self.isLoading) ? 0.25 : 1.0
@@ -76,8 +80,9 @@ class WeatherViewController: UIViewController {
         super.viewDidLoad()
         self.setUp()
         self.bind()
-        self.isLoading = true
-        self.weatherViewModel.loadMostRecentLocation()
+        self.weatherViewModel.loadMostRecentLocation {
+            self.isLoading = true
+        }
     }
 
     private func bind() {
@@ -108,6 +113,7 @@ class WeatherViewController: UIViewController {
         let bottomSpacer = UIView.generateSpacerView()
         
         vStack.addArrangedSubview(topSpacer)
+        vStack.addArrangedSubview(self.welcomeLabel)
         vStack.addArrangedSubview(self.weatherView)
         vStack.addArrangedSubview(bottomSpacer)
         
@@ -130,7 +136,6 @@ class WeatherViewController: UIViewController {
         self.isLoading = true
         self.weatherViewModel.loadCurrentLocationWeather()
     }
-
 
 }
 
