@@ -87,21 +87,21 @@ class WeatherViewController: UIViewController {
     private func bind() {
         self.weatherViewModel.weatherFormattedPublisher
             .delay(for: 3, scheduler: DispatchQueue.main)
-            .sink(receiveCompletion: { [weak self] completion in
+            .sink { [weak self] result in
                 self?.isLoading = false
-                print(completion)
-                if case .failure = completion {
+                
+                switch result {
+                case .success(let weatherformatter):
+                    self?.weatherView.update(with: weatherformatter)
+                case .failure:
                     self?.presentErrorAlert()
                 }
-            }, receiveValue: { [weak self] formattedViewModel in
-                self?.isLoading = false
-                self?.weatherView.update(with: formattedViewModel)
-            }).store(in: &self.subscribers)
+            }.store(in: &self.subscribers)
     }
     
     // TODO: Refactor to include Scroll capability for smaller space
     private func setUp() {
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = .systemBackground
         
         let vStack = UIStackView(axis: .vertical, alignment: .fill)
         

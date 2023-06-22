@@ -16,13 +16,6 @@ class WeatherView: UIView {
         return view
     }()
     
-    lazy var loadingView: UIView = {
-        let view = UIView(frame: .zero)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .clear
-        return view
-    }()
-    
     lazy var locationLabel: UILabel = {
         return UILabel(initialText: "", alignment: .center, font: UIFont.systemFont(ofSize: 24))
     }()
@@ -130,9 +123,27 @@ class WeatherView: UIView {
         self.addSubview(self.contentView)
         self.contentView.bindToContainerView(edges: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
         
+        
         self.insertSubview(self.loadSpinner, at: 0)
         self.loadSpinner.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
         self.loadSpinner.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+    }
+    
+    // Called to redraw load spinner view if light / dark mode changes while running the app
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        self.resetSpinner()
+    }
+    
+    private func resetSpinner() {
+        NSLayoutConstraint.deactivate(self.loadSpinner.constraints)
+        self.loadSpinner.removeFromSuperview()
+        self.loadSpinner = TriangleLoadingView()
+        self.loadSpinner.translatesAutoresizingMaskIntoConstraints = false
+        self.insertSubview(self.loadSpinner, at: 0)
+        self.loadSpinner.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        self.loadSpinner.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+        self.loadSpinner.isHidden = true
     }
     
     func update(with weatherFormatter: WeatherFormatter) {

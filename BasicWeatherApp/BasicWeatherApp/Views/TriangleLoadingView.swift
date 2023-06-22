@@ -32,7 +32,7 @@ class TriangleLoadingView: UIView {
         self.layer.addSublayer(shapeLayer)
         
         let fillAnimation = CAKeyframeAnimation(keyPath: "fillColor")
-        fillAnimation.values = [UIColor.clear.cgColor, UIColor.black.cgColor, UIColor.clear.cgColor]
+        fillAnimation.values = [UIColor.clear.cgColor, UIColor.label.cgColor, UIColor.clear.cgColor]
         fillAnimation.keyTimes = [0, 0.5, 1]
         
         let rotationAnimation = CAKeyframeAnimation(keyPath: "transform.rotation.z")

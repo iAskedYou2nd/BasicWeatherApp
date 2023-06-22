@@ -14,24 +14,24 @@ class WeatherViewModel: ObservableObject, WeatherViewModelType {
     private let locationManager: LocationManagerType?
     private let persistentContainer: PersistentContainerType
     private let cache: CacheType
-    var weatherFormattedPublisher = PassthroughSubject<WeatherFormatter, Error>()
+    var weatherFormattedPublisher = PassthroughSubject<Result<WeatherFormatter, Error>, Never>()
     private var weatherModel: WeatherModel? {
         didSet {
             if self.weatherModel == nil {
                 // Generic Error as there will always be the same message to the user
-                self.weatherFormattedPublisher.send(completion: .failure(NSError(domain: "Error", code: 0)))
+                self.weatherFormattedPublisher.send(.failure(NSError(domain: "Error", code: 0)))
             }
         }
     }
     private var iconData: Data? {
         didSet {
             if let data = self.iconData, let weatherModel = self.weatherModel {
-                let formattedViewModel = WeatherFormatter(weatherModel: weatherModel, iconData: data)
+                let weatherFormatter = WeatherFormatter(weatherModel: weatherModel, iconData: data)
                 // Only notify when all data is done
-                self.weatherFormattedPublisher.send(formattedViewModel)
+                self.weatherFormattedPublisher.send(.success(weatherFormatter))
             } else {
                 // Generic Error as there will always be the same message to the user
-                self.weatherFormattedPublisher.send(completion: .failure(NSError(domain: "Error", code: 0)))
+                self.weatherFormattedPublisher.send(.failure(NSError(domain: "Error", code: 0)))
             }
         }
     }

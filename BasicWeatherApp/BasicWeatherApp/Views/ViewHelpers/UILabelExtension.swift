@@ -13,6 +13,7 @@ extension UILabel {
         self.init(frame: .zero)
         self.translatesAutoresizingMaskIntoConstraints = false
         self.text = initialText
+        self.textColor = UIColor.label
         self.textAlignment = alignment
         self.font = font
         self.numberOfLines = 0
