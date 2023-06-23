@@ -12,7 +12,7 @@ class DebugViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // arbitrary line change
-        // Another
+        // Another arbitrary change
         // Do any additional setup after loading the view.
     }
     
