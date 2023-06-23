@@ -10,7 +10,7 @@ import UIKit
 extension UIViewController {
     
     func presentErrorAlert() {
-        let alertController = UIAlertController(title: "Uh Oh", message: "Looks like something went wrong. Please try again later", preferredStyle: .alert)
+        let alertController = UIAlertController(title: "Uh Oh", message: "Looks like something went wrong. Please check if valid location is being requested or try again later", preferredStyle: .alert)
         let action = UIAlertAction(title: "Okay", style: .default)
         alertController.addAction(action)
         
