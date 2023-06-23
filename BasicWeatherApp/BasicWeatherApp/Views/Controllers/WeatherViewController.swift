@@ -10,8 +10,6 @@ import Combine
 
 /*
  TODO List:
- -Keyboard appearance with constraints
- -Make dark mode compatable
  -Write unit tests
  -Add ScrollView Maybe or just remove landscape. Not the most practical with landscape
  -Implement a debug menu
