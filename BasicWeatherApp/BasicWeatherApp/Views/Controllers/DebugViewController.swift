@@ -11,9 +11,8 @@ class DebugViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // More tests
-        // Adding changes
-        // Another
+        // arbitrary line change
+        // Another arbitrary change
         // Do any additional setup after loading the view.
     }
     
