@@ -10,9 +10,14 @@ import Combine
 
 /*
  TODO List:
+ -Add scrollview to debug menu
+ -Change debug to be dismmissed
+ -Create publisher or property wrapper for debug delay
+ -Create App Coordinator for global scope
+ -Refactor file placement
+ -finish Loader SDK and place that here, replacing load spinner
  -Write unit tests
- -Add ScrollView Maybe or just remove landscape. Not the most practical with landscape
- -Implement a debug menu
+ -Create CollectionView For smaller hourly updates
  -Create SwiftUI Version and verify all non-UI code works as is without changes
  */
 
@@ -84,7 +89,7 @@ class WeatherViewController: UIViewController {
 
     private func bind() {
         self.weatherViewModel.weatherFormattedPublisher
-            .delay(for: 3, scheduler: DispatchQueue.main)
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
                 self?.isLoading = false
                 
