@@ -10,6 +10,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    var coordinator: CoordinatorBasicType?
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -19,7 +20,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         self.window = UIWindow(windowScene: windowScene)
         let rootVC = WeatherViewController(viewModel: WeatherViewModel())
-        self.window?.rootViewController = rootVC
+        let navC = UINavigationController(rootViewController: rootVC)
+        self.coordinator = DebugMenuCoordinator(navController: navC)
+        self.coordinator?.launch()
+        self.window?.rootViewController = navC
         self.window?.makeKeyAndVisible()
     }
 
