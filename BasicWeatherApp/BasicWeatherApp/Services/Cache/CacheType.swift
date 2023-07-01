@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import Combine
 
 protocol CacheType {
     func set(_ data: Data, for key: String)
-    func get(for key: String) -> Data?
+    func get(for key: String) -> AnyPublisher<Data?, Never>
     func purgeCache()
 }

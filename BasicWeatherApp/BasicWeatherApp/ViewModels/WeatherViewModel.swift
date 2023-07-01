@@ -8,61 +8,6 @@
 import Foundation
 import Combine
 
-class DelayableSubject<Output, Failure>: Publisher where Failure: Error {
-    
-    private var subscriptions: [AnySubscriber<Output, Failure>] = []
-    
-    func receive<S>(subscriber: S) where S : Subscriber, Failure == S.Failure, Output == S.Input {
-        let subscriber = AnySubscriber(subscriber)
-        subscriptions.append(subscriber)
-    }
-    
-    func sendWithDelay(of timeInterval: DispatchTimeInterval = DebugSettings.shared.animationDelayTimeThrottle, _ output: Output) {
-        DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
-            for subscriber in self.subscriptions {
-                _ = subscriber.receive(output)
-            }
-        }
-    }
-
-}
-
-@propertyWrapper
-class DelayablePublished<T> {
-    
-    typealias DelayedPublisher = PassthroughSubject<Result<T, Error>, Never>
-    
-    private let delayablePublisher = DelayedPublisher()
-    private var internalValue: T?
-    
-    var wrappedValue: T? {
-        get {
-            return self.internalValue
-        }
-        set {
-            self.internalValue = newValue
-            DispatchQueue.global().asyncAfter(deadline: .now() + DebugSettings.shared.animationDelayTimeThrottle) {
-                if let value = self.internalValue {
-                    self.delayablePublisher.send(.success(value))
-                } else {
-                    self.delayablePublisher.send(.failure(NSError(domain: "Error", code: 0)))
-                }
-            }
-        }
-    }
-    
-    init(wrappedValue: T?) {
-        self.wrappedValue = wrappedValue
-    }
-    
-    var projectedValue: DelayedPublisher {
-        return self.delayablePublisher
-    }
-
-}
-
-
-
 class WeatherViewModel: ObservableObject, WeatherViewModelType {
     
     private let networkManager: NetworkManagerType
@@ -70,16 +15,11 @@ class WeatherViewModel: ObservableObject, WeatherViewModelType {
     private let persistentContainer: PersistentContainerType
     private let cache: CacheType
     var weatherFormattedPublisher = PassthroughSubject<Result<WeatherFormatter, Error>, Never>()
-//    var weatherFormattedPublisher = DelayableSubject<Result<WeatherFormatter, Error>, Never>()
     private var weatherModel: WeatherModel? {
         didSet {
             if self.weatherModel == nil {
-                // MARK: Update this to be a custom Publisher object
                 // Generic Error as there will always be the same message to the user
-                DispatchQueue.global().asyncAfter(deadline: .now() + DebugSettings.shared.animationDelayTimeThrottle) {
-                    self.weatherFormattedPublisher.send(.failure(NSError(domain: "Error", code: 0)))
-                }
-//                self.weatherFormattedPublisher.sendWithDelay(.failure(NSError(domain: "Error", code: 0)))
+                self.weatherFormattedPublisher.send(.failure(NSError(domain: "Error", code: 0)))
             }
         }
     }
@@ -88,16 +28,10 @@ class WeatherViewModel: ObservableObject, WeatherViewModelType {
             if let data = self.iconData, let weatherModel = self.weatherModel {
                 let weatherFormatter = WeatherFormatter(weatherModel: weatherModel, iconData: data)
                 // Only notify when all data is done
-                DispatchQueue.global().asyncAfter(deadline: .now() + DebugSettings.shared.animationDelayTimeThrottle) {
-                    self.weatherFormattedPublisher.send(.success(weatherFormatter))
-                }
-//                self.weatherFormattedPublisher.sendWithDelay(.success(weatherFormatter))
+                self.weatherFormattedPublisher.send(.success(weatherFormatter))
             } else {
                 // Generic Error as there will always be the same message to the user
-                DispatchQueue.global().asyncAfter(deadline: .now() + DebugSettings.shared.animationDelayTimeThrottle) {
-                    self.weatherFormattedPublisher.send(.failure(NSError(domain: "Error", code: 0)))
-                }
-//                self.weatherFormattedPublisher.sendWithDelay(.failure(NSError(domain: "Error", code: 0)))
+                self.weatherFormattedPublisher.send(.failure(NSError(domain: "Error", code: 0)))
             }
         }
     }
@@ -145,22 +79,27 @@ class WeatherViewModel: ObservableObject, WeatherViewModelType {
             } receiveValue: { [weak self] (weatherModel: WeatherModel) in
                 self?.weatherModel = weatherModel
                 self?.persistentContainer.setModel(model: weatherModel.coord)
-                self?.requestIconData(for: weatherModel.weather.first?.icon)
+                self?.requestIconDataFromCache(for: weatherModel.weather.first?.icon)
             }.store(in: &self.subscribers)
     }
     
-    private func requestIconData(for iconName: String?) {
+    private func requestIconDataFromCache(for iconName: String?) {
         guard let iconName = iconName else { return }
         
-        if let cachedData = self.cache.get(for: iconName) {
-            self.iconData = cachedData
-            print("Cached Icon")
-            return
-        }
-        
+        self.cache.get(for: iconName)
+            .sink { [weak self] data in
+                if let data = data {
+                    print("Cached Icon")
+                    self?.iconData = data
+                } else {
+                    self?.requestIconDataFromNetwork(for: iconName)
+                }
+            }.store(in: &self.subscribers)
+    }
+    
+    private func requestIconDataFromNetwork(for iconName: String) {
         let request = Environment.weatherIcon(iconName).request
         self.networkManager.fetchData(request: request)
-            .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 if case .failure = completion {
                     self?.iconData = nil
@@ -171,7 +110,6 @@ class WeatherViewModel: ObservableObject, WeatherViewModelType {
                 self?.cache.set(iconData, for: iconName)
                 print("Fetched Icon")
             }.store(in: &self.subscribers)
-
     }
     
 }

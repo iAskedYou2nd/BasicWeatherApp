@@ -30,6 +30,7 @@ extension NetworkManager: NetworkManagerType {
         }
         
         return self.session.dataTaskPublisher(for: request)
+            .delay(for: DebugSettings.shared.apiRLDelayTimeThrottle, scheduler: RunLoop.current)
             .tryMap { map in
                 if let httpsResponse = map.response as? HTTPURLResponse,
                    !(200..<300).contains(httpsResponse.statusCode) {
@@ -54,6 +55,7 @@ extension NetworkManager: NetworkManagerType {
         }
         
         return self.session.dataTaskPublisher(for: request)
+            .delay(for: DebugSettings.shared.imageRLDelayTimeThrottle, scheduler: RunLoop.current)
             .tryMap { map in
                 if let httpsResponse = map.response as? HTTPURLResponse,
                    !(200..<300).contains(httpsResponse.statusCode) {

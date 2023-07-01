@@ -102,7 +102,6 @@ class WeatherViewController: UIViewController {
             }.store(in: &self.subscribers)
     }
     
-    // TODO: Refactor to include Scroll capability for smaller space
     private func setUp() {
         self.view.backgroundColor = .systemBackground
         

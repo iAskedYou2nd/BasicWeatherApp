@@ -24,22 +24,41 @@ class DebugViewController: UIViewController {
     }()
     
     // MARK: Update this to contain a scroll view for if/when settings exceed screen space
-    lazy var animationDelayLabel: UILabel = {
+    lazy var apiDelayLabel: UILabel = {
         let label = UILabel(frame: .zero)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .left
-        label.text = "Delay Load Animation: \(DebugSettings.shared.animationDelayTime)s"
+        label.text = "Delay API Fetch: \(DebugSettings.shared.apiDelayTime)s"
         return label
     }()
     
-    lazy var animationDelayStepper: UIStepper = {
+    lazy var apiDelayStepper: UIStepper = {
         let stepper = UIStepper(frame: .zero)
         stepper.translatesAutoresizingMaskIntoConstraints = false
         stepper.minimumValue = 0
         stepper.maximumValue = 10
-        stepper.value = Double(DebugSettings.shared.animationDelayTime)
+        stepper.value = Double(DebugSettings.shared.apiDelayTime)
         stepper.stepValue = 1
         stepper.addTarget(self, action: #selector(self.animationDelayStepperValueChanged), for: .valueChanged)
+        return stepper
+    }()
+    
+    lazy var imageDelayLabel: UILabel = {
+        let label = UILabel(frame: .zero)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .left
+        label.text = "Delay Image Fetch: \(DebugSettings.shared.imageDelayTime)s"
+        return label
+    }()
+    
+    lazy var imageDelayStepper: UIStepper = {
+        let stepper = UIStepper(frame: .zero)
+        stepper.translatesAutoresizingMaskIntoConstraints = false
+        stepper.minimumValue = 0
+        stepper.maximumValue = 10
+        stepper.value = Double(DebugSettings.shared.imageDelayTime)
+        stepper.stepValue = 1
+        stepper.addTarget(self, action: #selector(self.imageDelayStepperValueChanged), for: .valueChanged)
         return stepper
     }()
     
@@ -54,12 +73,19 @@ class DebugViewController: UIViewController {
         let containerStack = UIStackView(axis: .vertical, alignment: .fill)
         
         let animationDelayStackView = UIStackView(axis: .horizontal, alignment: .fill)
-        animationDelayStackView.addArrangedSubview(self.animationDelayLabel)
+        animationDelayStackView.addArrangedSubview(self.apiDelayLabel)
         animationDelayStackView.addArrangedSubview(UIView.generateSpacerView())
-        animationDelayStackView.addArrangedSubview(self.animationDelayStepper)
+        animationDelayStackView.addArrangedSubview(self.apiDelayStepper)
         animationDelayStackView.heightAnchor.constraint(equalToConstant: Self.SettingHeight).isActive = true
         
+        let imageDelayStackView = UIStackView(axis: .horizontal, alignment: .fill)
+        imageDelayStackView.addArrangedSubview(self.imageDelayLabel)
+        imageDelayStackView.addArrangedSubview(UIView.generateSpacerView())
+        imageDelayStackView.addArrangedSubview(self.imageDelayStepper)
+        imageDelayStackView.heightAnchor.constraint(equalToConstant: Self.SettingHeight).isActive = true
+        
         containerStack.addArrangedSubview(animationDelayStackView)
+        containerStack.addArrangedSubview(imageDelayStackView)
         containerStack.addArrangedSubview(UIView.generateSpacerView())
         
         self.view.addSubview(containerStack)
@@ -81,8 +107,14 @@ class DebugViewController: UIViewController {
     
     @objc
     func animationDelayStepperValueChanged() {
-        self.animationDelayLabel.text = String(format: "Delay Load Animation: %ds", Int(self.animationDelayStepper.value))
-        DebugSettings.shared.animationDelayTime = Int(self.animationDelayStepper.value)
+        self.apiDelayLabel.text = String(format: "Delay API Fetch: %ds", Int(self.apiDelayStepper.value))
+        DebugSettings.shared.apiDelayTime = Int(self.apiDelayStepper.value)
+    }
+    
+    @objc
+    func imageDelayStepperValueChanged() {
+        self.imageDelayLabel.text = String(format: "Delay Image Fetch: %ds", Int(self.imageDelayStepper.value))
+        DebugSettings.shared.imageDelayTime = Int(self.imageDelayStepper.value)
     }
 
 }

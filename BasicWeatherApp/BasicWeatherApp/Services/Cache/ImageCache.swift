@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 final class ImageCache {
     
@@ -24,10 +25,14 @@ extension ImageCache: CacheType {
         self.cache.setObject(objc, forKey: nsKey)
     }
     
-    func get(for key: String) -> Data? {
+    func get(for key: String) -> AnyPublisher<Data?, Never> {
         let nsKey = NSString(string: key)
-        guard let objc = self.cache.object(forKey: nsKey) else { return nil }
-        return Data(referencing: objc)
+        guard let objc = self.cache.object(forKey: nsKey) else {
+            return Just(nil).eraseToAnyPublisher()
+        }
+        return Just(Data(referencing: objc))
+            .delay(for: DebugSettings.shared.imageRLDelayTimeThrottle, scheduler: RunLoop.current)
+            .eraseToAnyPublisher()
     }
     
     func purgeCache() {

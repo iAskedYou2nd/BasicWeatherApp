@@ -11,9 +11,20 @@ final class DebugSettings {
     
     static let shared = DebugSettings()
     
-    var animationDelayTime: Int = 0
-    var animationDelayTimeThrottle: DispatchTimeInterval {
-        return .seconds(self.animationDelayTime)
+    var apiDelayTime: Int = 0
+    var apiDQDelayTimeThrottle: DispatchTimeInterval {
+        return .seconds(self.apiDelayTime)
+    }
+    var apiRLDelayTimeThrottle: RunLoop.SchedulerTimeType.Stride {
+        return .seconds(self.apiDelayTime)
+    }
+    
+    var imageDelayTime: Int = 0
+    var imageDQDelayTimeThrottle: DispatchTimeInterval {
+        return .seconds(self.imageDelayTime)
+    }
+    var imageRLDelayTimeThrottle: RunLoop.SchedulerTimeType.Stride {
+        return .seconds(self.imageDelayTime)
     }
     
     
