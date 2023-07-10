@@ -1,0 +1,38 @@
+{
+  "configurations" : [
+    {
+      "id" : "2A06A512-1100-4BD6-B715-4E80B023D739",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:BasicWeatherApp.xcodeproj",
+          "identifier" : "571B8F6D2A27E84C0009D59D",
+          "name" : "BasicWeatherApp"
+        }
+      ]
+    },
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:BasicWeatherApp.xcodeproj",
+      "identifier" : "571B8F6D2A27E84C0009D59D",
+      "name" : "BasicWeatherApp"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:BasicWeatherApp.xcodeproj",
+        "identifier" : "57BE87182A5C970700822224",
+        "name" : "BasicWeatherAppTests"
+      }
+    }
+  ],
+  "version" : 1
+}

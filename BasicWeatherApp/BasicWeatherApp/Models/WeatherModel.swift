@@ -24,7 +24,7 @@ struct WeatherModel: Decodable {
 }
 
 // Only Model Codable as it needs both Decodable and Encodable
-struct Coordinates: Codable {
+struct Coordinates: Codable, Equatable {
     let lon: Double
     let lat: Double
 }
