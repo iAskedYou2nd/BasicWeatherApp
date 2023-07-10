@@ -10,9 +10,15 @@ import Combine
 
 /*
  TODO List:
+ -Accessibility components
+    -Check for zoom in/magnifying glass
+    -Voice Over
+    -Dynamic Texts
+ -Create App Icon
+ -Dish out money for a Apple Dev Account for TestFlight
+ -SwiftLint / SwiftFormat for practice
  -Add scrollview to debug menu
- -Change debug to be dismmissed
- -Create publisher or property wrapper for debug delay
+ -Create publisher or property wrapper for debug delay - if possible
  -Create App Coordinator for global scope
  -Refactor file placement
  -finish Loader SDK and place that here, replacing load spinner
