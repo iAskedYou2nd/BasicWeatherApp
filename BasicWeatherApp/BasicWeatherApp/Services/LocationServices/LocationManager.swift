@@ -11,7 +11,7 @@ import Combine
 
 class LocationManager: NSObject, LocationManagerType {
     
-    private let manager: CLLocationManager = CLLocationManager()
+    private let manager: CLLocationManager
     
     // TODO: Check for location errors possible and replace with Never
     var currentLocationPublisher = PassthroughSubject<Coordinates, Error>()
@@ -25,7 +25,8 @@ class LocationManager: NSObject, LocationManagerType {
         }
     }
     
-    override init() {
+    init(manager: CLLocationManager = CLLocationManager()) {
+        self.manager = manager
         super.init()
         self.manager.delegate = self
         self.manager.requestAlwaysAuthorization()

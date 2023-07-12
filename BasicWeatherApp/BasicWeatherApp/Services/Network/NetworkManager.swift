@@ -10,10 +10,10 @@ import Combine
 
 class NetworkManager {
     
-    let session: URLSession
+    let session: PublisherSession
     let decoder: JSONDecoder
     
-    init(session: URLSession = URLSession.shared, decoder: JSONDecoder = JSONDecoder()) {
+    init(session: PublisherSession = URLSession.shared, decoder: JSONDecoder = JSONDecoder()) {
         self.session = session
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         self.decoder = decoder
@@ -29,7 +29,7 @@ extension NetworkManager: NetworkManagerType {
             return Fail(error: NetworkError.invalidRequest).eraseToAnyPublisher()
         }
         
-        return self.session.dataTaskPublisher(for: request)
+        return self.session.dataTaskPublisher(with: request)
             .delay(for: DebugSettings.shared.apiRLDelayTimeThrottle, scheduler: RunLoop.current)
             .tryMap { map in
                 if let httpsResponse = map.response as? HTTPURLResponse,
@@ -39,6 +39,9 @@ extension NetworkManager: NetworkManagerType {
                 return map.data
             }.decode(type: T.self, decoder: self.decoder)
             .mapError { error in
+                if let statusCodeErr = error as? NetworkError {
+                    return statusCodeErr
+                }
                 if let decodeError = error as? DecodingError {
                     return NetworkError.decodeError(decodeError)
                 }
@@ -54,7 +57,7 @@ extension NetworkManager: NetworkManagerType {
             return Fail(error: NetworkError.invalidRequest).eraseToAnyPublisher()
         }
         
-        return self.session.dataTaskPublisher(for: request)
+        return self.session.dataTaskPublisher(with: request)
             .delay(for: DebugSettings.shared.imageRLDelayTimeThrottle, scheduler: RunLoop.current)
             .tryMap { map in
                 if let httpsResponse = map.response as? HTTPURLResponse,
@@ -64,6 +67,9 @@ extension NetworkManager: NetworkManagerType {
                 return map.data
             }
             .mapError { error in
+                if let statusCodeErr = error as? NetworkError {
+                    return statusCodeErr
+                }
                 return NetworkError.other(error)
             }.eraseToAnyPublisher()
         
